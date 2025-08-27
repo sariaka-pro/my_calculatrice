@@ -1,7 +1,18 @@
 pipeline {
     agent any
 
+    environment {
+        PATH = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${env.PATH}"
+    }
+
     stages {
+        stage('Check Docker') {
+            steps {
+                sh 'docker --version'
+                sh 'which docker'
+            }
+        }
+
         stage('Cloner le Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/sariaka-pro/my_calculatrice'
@@ -11,10 +22,10 @@ pipeline {
         stage('Construire et Tester l\'Image Docker') {
             steps {
                 script {
-                    // Construire l'image
+                    // Construire l'image Docker
                     sh "docker build --no-cache -t calculatrice:${env.BUILD_ID} ."
 
-                    // Lancer le container → il démarre http-server + exécute test_calculatrice.js
+                    // Lancer le container pour exécuter les tests
                     sh "docker run --rm calculatrice:${env.BUILD_ID}"
                 }
             }
