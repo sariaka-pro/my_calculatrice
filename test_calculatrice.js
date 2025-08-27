@@ -22,7 +22,7 @@ let driver = await new Builder()
 
     try {
         // Accéder au site
-        await driver.get('http://localhost:8081/index.html');
+        await driver.get('http://localhost:8080/index.html');
         // --- Test 1 : Vérifier l'Addition ---
         await driver.findElement(By.id('number1')).sendKeys('12'); 
         await driver.findElement(By.id('number2')).sendKeys('2'); 

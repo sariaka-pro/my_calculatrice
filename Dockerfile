@@ -17,7 +17,7 @@ COPY test_calculatrice.js .
 RUN npm install selenium-webdriver http-server 
 
 # Exposer le port 
-EXPOSE 8081
+EXPOSE 8080
 
 # Démarrer le serveur statique + attendre + lancer les tests
-CMD ["sh", "-c", "npx http-server -p 8081 & sleep 10 && node test_calculatrice.js"]
+CMD ["sh", "-c", "npx http-server -p 8080 & sleep 10 && node test_calculatrice.js"]
