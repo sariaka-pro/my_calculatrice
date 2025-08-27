@@ -8,7 +8,7 @@ Une application web simple pour effectuer des opérations mathématiques de base
 2. Entrez deux nombres, choisissez une opération, et cliquez sur "Calculer" pour voir le résultat.
 
 ## Dépendances
-Aucune.
+Aucune. 
 
 ## Auteur
 Votre nom.
