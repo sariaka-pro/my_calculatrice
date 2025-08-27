@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Cloner le Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/sariaka-pro/my_calculatrice.git'
+                git branch: 'main', url: 'https://github.com/sariaka-pro/my_calculatrice'
             }
         }
 
