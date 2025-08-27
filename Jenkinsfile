@@ -12,8 +12,8 @@ pipeline {
 
         stage('Construire et tester') {
             steps {
-                // Construire avec Maven
-                sh 'mvn clean install'
+                // Construire l'image
+                sh 'docker build -t my_calculatrice .'
 
                 // Lancer le serveur statique puis exécuter le test Selenium
                 sh 'npx http-server ./ &'
