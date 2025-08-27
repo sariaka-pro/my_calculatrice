@@ -12,10 +12,10 @@ pipeline {
             steps {
                 script {
                     // Construire l'image
-                    sh "docker build --no-cache -t calculatrice_app:${env.BUILD_ID} ."
+                    sh "docker build --no-cache -t calculatrice:${env.BUILD_ID} ."
 
                     // Lancer le container → il démarre http-server + exécute test_calculatrice.js
-                    sh "docker run --rm calculatrice_app:${env.BUILD_ID}"
+                    sh "docker run --rm calculatrice:${env.BUILD_ID}"
                 }
             }
         }
@@ -31,7 +31,7 @@ pipeline {
                     sh 'docker rm -f calculatrice-prod || true'
 
                     // Lancer l’appli en prod (pas les tests, juste le serveur statique)
-                    sh "docker run -d -p 8081:8080 --name calculatrice_app-prod calculatrice_app:${env.BUILD_ID} npx http-server -p 8080"
+                    sh "docker run -d -p 8081:8080 --name calculatrice-prod calculatrice:${env.BUILD_ID} npx http-server -p 8080"
                 } 
             }
         }
