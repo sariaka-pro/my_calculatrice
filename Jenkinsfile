@@ -2,52 +2,38 @@ pipeline {
     agent any
 
     stages {
-        stage('Cloner le code') {
+        stage('Cloner le Code') {
             steps {
-                // On clone le repo Github
-                git branch: 'main', 
-                    url: 'https://github.com/sariaka-pro/my_calculatrice.git'
+                git branch: 'main', url: 'https://github.com/kenaubry/TP-Calculatrice.git'
             }
         }
 
-        stage('Construire et tester') {
+        stage('Construire et Tester l\'Image Docker') {
             steps {
-                // Construire l'image
-                sh 'docker build -t my_calculatrice .'
+                script {
+                    // Construire l'image
+                    bat "docker build --no-cache -t calculatrice_app:${env.BUILD_ID} ."
 
-                // Lancer le serveur statique puis exécuter le test Selenium
-                sh 'npx http-server ./ &'
-                sh 'node test_calculatrice.js'
+                    // Lancer le container → il démarre http-server + exécute test_calculatrice.js
+                    bat "docker run --rm calculatrice_app:${env.BUILD_ID}"
+                }
             }
         }
 
-        stage('Déployer en production') {   // Définition du stage "Déployer en production"
-            steps {                         // Étapes de ce stage
-                script {                    // On passe en mode script (nécessaire pour mettre du code Groovy/if)
-            
-                // On demande une confirmation manuelle à l'utilisateur avant de déployer
-                def deploy = input(
-                id: 'DeployConfirmation',  // Identifiant interne du formulaire
-                message: 'Voulez-vous déployer en production ?', // Message affiché dans Jenkins
-                parameters: [
-                    // L'utilisateur doit choisir entre Oui et Non
-                    choice(name: 'confirme', choices: ['Non', 'Oui'], description: 'Choisir Oui pour déployer')
-                ]
-            )
+        stage('Déployer en Production') {
+            when {
+                expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
+            }
+            steps {
+                input message: 'Les tests ont réussi. Voulez-vous déployer en production ?', ok: 'Déployer'
+                script {
+                    // Supprimer un ancien container prod s’il existe
+                    bat 'docker rm -f calculatrice-prod || true'
 
-            // Si l'utilisateur clique sur "Oui"
-                if (deploy == 'Oui') {
-                echo "Déploiement validé"  // Affiche un message dans la console Jenkins
-
-            
-            // Si l'utilisateur clique sur "Non"
-                } else {
-                echo "Déploiement annulé"      // Affiche un message dans la console
-                currentBuild.result = 'ABORTED'   // Marque le build comme annulé
-                error("Déploiement non validé")   // Stoppe le pipeline avec une erreur
+                    // Lancer l’appli en prod (pas les tests, juste le serveur statique)
+                    bat "docker run -d -p 8081:8080 --name calculatrice_app-prod calculatrice_app:${env.BUILD_ID} npx http-server -p 8080"
+                } 
             }
         }
     }
-}
-}
 }
